@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Students | Attendance System</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="topbar"><div class="brand">📋 Attendance System</div><nav><a href="index.html">Dashboard</a><a class="active" href="students.html">Students</a><a href="attendance.html">Attendance</a><a href="report.html">Reports</a></nav><button class="logout" onclick="logout()">Logout</button></header>
+<main class="container">
+<section class="page-title"><div><p class="eyebrow">STUDENT MANAGEMENT</p><h1>Students</h1><p>Add and manage registered students.</p></div></section>
+<section class="card form-card"><h2>Add Student</h2><form id="studentForm" class="form-grid">
+<label>Student ID<input id="studentId" required placeholder="e.g. CS001"></label>
+<label>Student Name<input id="studentName" required placeholder="Enter full name"></label>
+<label>Department<select id="department"><option>Computer Science</option><option>Information Technology</option><option>Electronics</option><option>Mechanical</option><option>Civil</option></select></label>
+<label>Year<select id="year"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select></label>
+<button class="btn primary" type="submit">Add Student</button></form></section>
+<section class="card"><div class="card-head"><h2>Student List</h2><input class="search" id="search" placeholder="Search student..."></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Year</th><th>Action</th></tr></thead><tbody id="studentTable"></tbody></table></div></section>
+</main><footer>Attendance System • Student Management</footer>
+<script src="script.js"></script><script>
+function renderStudents(filter=""){const body=document.getElementById("studentTable"), students=getStudents().filter(s=>(s.id+" "+s.name+" "+s.department).toLowerCase().includes(filter.toLowerCase())); body.innerHTML=students.length?students.map(s=>`<tr><td>${escapeHtml(s.id)}</td><td><b>${escapeHtml(s.name)}</b></td><td>${escapeHtml(s.department)}</td><td>${escapeHtml(s.year)}</td><td><button class="btn danger small" onclick="removeStudent('${encodeURIComponent(s.id)}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No students found.</td></tr>`}
+function removeStudent(id){id=decodeURIComponent(id); if(confirm("Delete this student?")){saveStudents(getStudents().filter(s=>s.id!==id)); renderStudents();}}
+document.getElementById("studentForm").addEventListener("submit",e=>{e.preventDefault();const s={id:studentId.value.trim(),name:studentName.value.trim(),department:department.value,year:year.value};let arr=getStudents();if(arr.some(x=>x.id.toLowerCase()===s.id.toLowerCase()))return alert("Student ID already exists.");arr.push(s);saveStudents(arr);e.target.reset();renderStudents();alert("Student added successfully.");});
+document.getElementById("search").addEventListener("input",e=>renderStudents(e.target.value));renderStudents();
+</script></body></html>
