@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Reports | Attendance System</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="topbar"><div class="brand">📋 Attendance System</div><nav><a href="index.html">Dashboard</a><a href="students.html">Students</a><a href="attendance.html">Attendance</a><a class="active" href="report.html">Reports</a></nav><button class="logout" onclick="logout()">Logout</button></header>
+<main class="container">
+<section class="page-title"><div><p class="eyebrow">ANALYTICS</p><h1>Attendance Reports</h1><p>View attendance percentage for every student.</p></div><button class="btn primary" onclick="exportCSV()">Export CSV</button></section>
+<section class="card"><div class="card-head"><h2>Student Performance</h2><input class="search" id="reportSearch" placeholder="Search student..."></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Student</th><th>Present</th><th>Absent</th><th>Total</th><th>Attendance</th></tr></thead><tbody id="reportTable"></tbody></table></div></section>
+</main><footer>Attendance System • Reports</footer>
+<script src="script.js"></script><script>
+function renderReports(filter=""){const students=getStudents(), records=getRecords();const body=document.getElementById("reportTable");const rows=students.filter(s=>(s.id+" "+s.name).toLowerCase().includes(filter.toLowerCase())).map(s=>{const r=records.filter(x=>x.id===s.id),p=r.filter(x=>x.status==="Present").length,a=r.filter(x=>x.status==="Absent").length,total=p+a,rate=total?Math.round(p/total*100):0;return `<tr><td>${escapeHtml(s.id)}</td><td><b>${escapeHtml(s.name)}</b></td><td><span class="pill present">${p}</span></td><td><span class="pill absent">${a}</span></td><td>${total}</td><td><div class="progress"><span style="width:${rate}%"></span></div><b>${rate}%</b></td></tr>`}).join("");body.innerHTML=rows||'<tr><td colspan="6" class="empty">No data available.</td></tr>'}
+function exportCSV(){const students=getStudents(),records=getRecords();let csv="Student ID,Student Name,Date,Status\\n";records.forEach(r=>csv+=`"${r.id}","${r.name.replaceAll('"','""')}","${r.date}","${r.status}"\\n`);const blob=new Blob([csv],{type:"text/csv"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="attendance-report.csv";a.click();URL.revokeObjectURL(url);}
+document.getElementById("reportSearch").addEventListener("input",e=>renderReports(e.target.value));renderReports();
+</script></body></html>
