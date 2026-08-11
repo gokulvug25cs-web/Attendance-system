@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance System | Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📋 Attendance System</div>
+  <nav>
+    <a class="active" href="index.html">Dashboard</a>
+    <a href="students.html">Students</a>
+    <a href="attendance.html">Attendance</a>
+    <a href="report.html">Reports</a>
+  </nav>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+<main class="container">
+  <section class="hero">
+    <div><p class="eyebrow">ATTENDANCE MANAGEMENT</p><h1>Welcome to your dashboard</h1><p>Manage students, mark daily attendance, and view reports in one place.</p></div>
+    <a class="btn primary" href="attendance.html">Mark Attendance →</a>
+  </section>
+  <section class="stats">
+    <div class="stat"><span>👨‍🎓</span><div><p>Total Students</p><h2 id="totalStudents">0</h2></div></div>
+    <div class="stat"><span>✅</span><div><p>Present Today</p><h2 id="presentToday">0</h2></div></div>
+    <div class="stat"><span>❌</span><div><p>Absent Today</p><h2 id="absentToday">0</h2></div></div>
+    <div class="stat"><span>📈</span><div><p>Today's Rate</p><h2 id="todayRate">0%</h2></div></div>
+  </section>
+  <section class="grid-2">
+    <div class="card"><div class="card-head"><h2>Quick Actions</h2></div>
+      <div class="quick">
+        <a href="students.html" class="quick-item">➕<b>Add Student</b><small>Register a new student</small></a>
+        <a href="attendance.html" class="quick-item">📝<b>Take Attendance</b><small>Mark today's attendance</small></a>
+        <a href="report.html" class="quick-item">📊<b>View Reports</b><small>Check attendance statistics</small></a>
+      </div>
+    </div>
+    <div class="card"><div class="card-head"><h2>Recent Activity</h2></div><div id="recentActivity" class="activity">No attendance records yet.</div></div>
+  </section>
+</main>
+<footer>Attendance System • Built with HTML, CSS and JavaScript</footer>
+<script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const students = getStudents(), records = getRecords(), today = todayKey();
+  const todayRecords = records.filter(r => r.date === today);
+  const present = todayRecords.filter(r => r.status === "Present").length;
+  document.getElementById("totalStudents").textContent = students.length;
+  document.getElementById("presentToday").textContent = present;
+  document.getElementById("absentToday").textContent = todayRecords.filter(r => r.status === "Absent").length;
+  document.getElementById("todayRate").textContent = students.length ? Math.round(present / students.length * 100) + "%" : "0%";
+  const recent = document.getElementById("recentActivity");
+  if (records.length) recent.innerHTML = records.slice(-5).reverse().map(r => `<div class="activity-row"><b>${escapeHtml(r.name)}</b><span>${r.date}</span><span class="${r.status === "Present" ? "pill present" : "pill absent"}">${r.status}</span></div>`).join("");
+});
+</script>
+</body>
+</html>
