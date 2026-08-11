@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Attendance | Attendance System</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="topbar"><div class="brand">📋 Attendance System</div><nav><a href="index.html">Dashboard</a><a href="students.html">Students</a><a class="active" href="attendance.html">Attendance</a><a href="report.html">Reports</a></nav><button class="logout" onclick="logout()">Logout</button></header>
+<main class="container">
+<section class="page-title"><div><p class="eyebrow">DAILY ATTENDANCE</p><h1>Mark Attendance</h1><p>Select Present or Absent for each student.</p></div><label class="date-box">Date<input type="date" id="attendanceDate"></label></section>
+<section class="card"><div class="card-head"><h2>Student Attendance</h2><div><button class="btn outline" onclick="markAll('Present')">Mark All Present</button> <button class="btn outline" onclick="markAll('Absent')">Mark All Absent</button></div></div>
+<div id="attendanceList"></div><div class="save-row"><button class="btn primary" onclick="saveAttendance()">Save Attendance</button></div></section>
+</main><footer>Attendance System • Daily Attendance</footer>
+<script src="script.js"></script><script>
+let selected={}; const dateInput=document.getElementById("attendanceDate");dateInput.value=todayKey();
+function renderAttendance(){const students=getStudents(), date=dateInput.value, old=getRecords().filter(r=>r.date===date); selected={};old.forEach(r=>selected[r.id]=r.status);const box=document.getElementById("attendanceList");if(!students.length){box.innerHTML='<div class="empty">No students registered. <a href="students.html">Add students first.</a></div>';return;}box.innerHTML=students.map((s,i)=>`<div class="attendance-row"><div class="student-no">${i+1}</div><div class="student-info"><b>${escapeHtml(s.name)}</b><small>${escapeHtml(s.id)} • ${escapeHtml(s.department)}</small></div><div class="attendance-buttons"><button class="status ${selected[s.id]==="Present"?"selected-present":""}" onclick="setStatus('${encodeURIComponent(s.id)}','Present',this)">✓ Present</button><button class="status ${selected[s.id]==="Absent"?"selected-absent":""}" onclick="setStatus('${encodeURIComponent(s.id)}','Absent',this)">✕ Absent</button></div></div>`).join("");}
+function setStatus(id,status){selected[decodeURIComponent(id)]=status;renderAttendance();}
+function markAll(status){getStudents().forEach(s=>selected[s.id]=status);renderAttendance();}
+function saveAttendance(){const students=getStudents(), date=dateInput.value;if(!date)return alert("Select a date.");let records=getRecords().filter(r=>r.date!==date);students.forEach(s=>records.push({id:s.id,name:s.name,date,status:selected[s.id]||"Absent"}));saveRecords(records);alert("Attendance saved successfully.");}
+dateInput.addEventListener("change",renderAttendance);renderAttendance();
+</script></body></html>
